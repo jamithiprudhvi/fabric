@@ -1,0 +1,38 @@
+name: Fabric Prod Deployment
+
+on:
+  workflow_dispatch: # Manual trigger only
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  promote-to-prod:
+    runs-on: ubuntu-latest
+    environment: prod # GitHub environment with required reviewers
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to Azure (OIDC)
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Validate Release
+        run: |
+          # Pre-deployment checks (e.g., change logs, version tags)
+          echo "Validating release..."
+
+      - name: Deploy to Prod
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+        run: |
+          pwsh -Command "Deploy-FabricToProd -SourceWorkspace '${{ secrets.FABRIC_NONPROD_WORKSPACE_ID }}' -TargetWorkspace '${{ secrets.FABRIC_PROD_WORKSPACE_ID }}'"
+
+      - name: Post-Deployment Checks
+        run: |
+          # Verify deployment (e.g., API health checks)
+          echo "Running post-deployment validation..."

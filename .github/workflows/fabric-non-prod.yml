@@ -1,0 +1,35 @@
+name: Fabric Non-Prod Deployment
+
+on:
+  workflow_dispatch: # Manual trigger
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  promote-to-nonprod:
+    runs-on: ubuntu-latest
+    environment: nonprod # GitHub environment (with protection rules)
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to Azure (OIDC)
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Promote to Non-Prod Workspace
+        run: |
+          # Example: Deploy using Fabric APIs
+          pwsh -Command "Deploy-FabricToNonProd -SourceWorkspace '${{ secrets.FABRIC_DEV_WORKSPACE_ID }}' -TargetWorkspace '${{ secrets.FABRIC_NONPROD_WORKSPACE_ID }}'"
+
+      - name: Run Integration Tests
+        run: |
+          # Add test validation (e.g., data consistency, report rendering)
+          echo "Running smoke tests..."
