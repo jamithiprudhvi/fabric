@@ -4,9 +4,9 @@ on:
   push:
     branches: [ "dev" ]
 
-# permissions:
-#   id-token: write # For OIDC authentication
-#   contents: read
+permissions:
+  id-token: write # For OIDC authentication
+  contents: read
 
 jobs:
   validate-and-deploy:
