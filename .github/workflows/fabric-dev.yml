@@ -32,3 +32,4 @@ jobs:
         run: |
           pwsh -Command "Connect-PowerBIServiceAccount -ServicePrincipal -TenantId '${{ secrets.AZURE_TENANT_ID }}' -Credential (New-Object System.Management.Automation.PSCredential('${{ secrets.AZURE_CLIENT_ID }}', (ConvertTo-SecureString '${{ secrets.AZURE_CLIENT_SECRET }}' -AsPlainText -Force)))"
           pwsh -Command "Publish-FabricArtifacts -WorkspaceId '${{ secrets.FABRIC_DEV_WORKSPACE_ID }}' -Path './artifacts'"
+####          
